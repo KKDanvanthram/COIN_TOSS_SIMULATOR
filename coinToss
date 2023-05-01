@@ -1,0 +1,90 @@
+from tkinter import *
+import random
+import cv2
+from customtkinter import *
+def decider():
+    e1=entry1.get()
+    e2=entry2.get()
+    if e1=="" and e2=="":
+        toss()
+    if e1.isdigit():
+        if int(e1)>100:
+            heads()
+        else:
+            tp=100-int(e1)
+            tossunbias(int(e1),tp)
+    if e1=='' and e2.isdigit():
+        if int(e2)>100:
+            tails()
+        else:
+            tt=100-int(e2)
+            tossunbias(int(e2),tt)          
+def toss():
+    a=random.randint(0,1)
+    if a==0:
+        tails()
+    else:
+        heads()
+def tossunbias(x,y):
+    l1=[]
+    l2=[]
+    for i in range(1,x+1):
+        l1.append(i)
+    for j in range(x+1,101):
+        l2.append(j)
+    a=random.randint(1,100)
+    if a in l1:
+        heads()
+    else:
+        tails()
+def tails():
+    try:
+        cap=cv2.VideoCapture("tails.mp4")
+        while (cap.isOpened()):
+            ret,frame=cap.read()
+            frame=cv2.resize(frame,(300,300))
+            cv2.imshow("Coin Toss",frame)
+            if cv2.waitKey(10) & 0xFF == ord('q'):
+                break    
+        cap.release()
+        cv2.destroyAllWindows()
+    except cv2.error:
+        cv2.destroyAllWindows()
+        pass
+def heads():
+    try:
+        cap=cv2.VideoCapture("heads.mp4")
+        while (cap.isOpened()):
+            ret,frame=cap.read()
+            frame=cv2.resize(frame,(300,300))
+            cv2.imshow("Coin Toss",frame)
+            if cv2.waitKey(10) & 0xFF == ord('q'):
+                break
+        cap.release()
+        cv2.destroyAllWindows()
+    except cv2.error:
+        cv2.destroyAllWindows()
+        pass
+def switch_event():
+        if switch_var1.get()=='on':
+            set_appearance_mode('dark')
+        else:
+            set_appearance_mode('light')
+root=CTk()
+root.title("Coin Toss")
+root.geometry("500x300")
+root.iconbitmap("home.ico")
+frame=CTkFrame(master=root,width=500,height=300)
+frame.pack(padx=20,pady=20)
+CTkLabel(master=frame,text='Head Percentage').place(x=20,y=20)
+CTkLabel(master=frame,text='Tail Percentage').place(x=20,y=70)
+entry1=CTkEntry(master=frame,width=250,placeholder_text="Enter the chances of getting Head")
+entry1.place(x=170,y=20)
+switch_var1 = StringVar(value="off")
+entry2=CTkEntry(master=frame,width=250,placeholder_text="Enter the chances of getting Tails")
+entry2.place(x=170,y=70)
+CTkButton(master=frame,text="Toss The Coin",height=50,width=150,command=decider,corner_radius=15).place(x=50,y=150)
+CTkButton(master=frame,text="Toss Unbiased Coin",height=50,width=150,command=toss,corner_radius=15).place(x=250,y=150)
+switch_1 =CTkSwitch(master=frame, text="Switch Theme", command=switch_event,variable=switch_var1, onvalue="on", offvalue="off")
+switch_1.place(x=160,y=210)
+root.mainloop()
